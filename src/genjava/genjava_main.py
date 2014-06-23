@@ -36,46 +36,49 @@
 
 from __future__ import print_function
 import argparse
-import os
+#import os
 #import sys
 #import traceback
 #import genmsg
-import genmsg.command_line
+#import genmsg.command_line
 
 #from genmsg import MsgGenerationException
 #from . generate_initpy import write_modules
+from . import gradle_project
 
 ##############################################################################
 # Methods
 ##############################################################################
 
 
-def parse_arguments():
+def parse_arguments(argv):
     '''
       The include path has a special format, e.g.
          -Ifoo_msgs:/mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg
     '''
     parser = argparse.ArgumentParser(description='Generate java code for a single ros message.')
-    parser.add_argument('-m', '--message', action='store', help='the message file')
+    #parser.add_argument('-m', '--message', action='store', help='the message file')
     parser.add_argument('-p', '--package', action='store', help='package to find the message file')
     parser.add_argument('-o', '--output-dir', action='store', help='output directory for the java code (e.g. build/foo_msgs)')
-    parser.add_argument('-I', '--include-path', action='append', help="include paths to the package and deps msg files")
+    #parser.add_argument('-I', '--include-path', action='append', help="include paths to the package and deps msg files")
     #myargs = rospy.myargv(argv=sys.argv)
     #return parser.parse_args(args=myargs[1:])
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 ##############################################################################
 # Main
 ##############################################################################
 
-def genmain(argv, progname):  # , gen):
-    args = parse_arguments()
-    print("genjava %s/%s" % (args.package, args.message))
+
+def main(argv):
+    args = parse_arguments(argv[1:])
+    #print("genjava %s/%s" % (args.package, args.message))
     print("  output dir..........%s" % args.output_dir)
-    search_path = genmsg.command_line.includepath_to_dict(args.include_path)
-    print("  search path.......%s" % search_path)
-    gradle_project_dir = os.path.join(args.output_dir, 'gradle')
-    os.mkdir(gradle_project_dir)
+    gradle_project.create(args.package, args.output_dir)
+    #search_path = genmsg.command_line.includepath_to_dict(args.include_path)
+    #print("  search path.......%s" % search_path)
+    #gradle_project_dir = os.path.join(args.output_dir, 'gradle')
+    #os.mkdir(gradle_project_dir)
 
 #     try:
 #         if options.initpy:

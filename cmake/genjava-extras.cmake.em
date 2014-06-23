@@ -6,118 +6,91 @@ set(GENJAVA_BIN_DIR "@(CMAKE_CURRENT_SOURCE_DIR)/scripts")
 set(GENJAVA_BIN_DIR "${GENJAVA_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
 @[end if]@
 
-set(GENMSG_JAVA_BIN ${GENJAVA_BIN_DIR}/genmsg_java.py)
-set(GENSRV_JAVA_BIN ${GENJAVA_BIN_DIR}/gensrv_java.py)
+set(GENJAVA_BIN ${GENJAVA_BIN_DIR}/genjava_gradle_project.py)
+set(genjava_INSTALL_DIR "maven/org/ros/rosjava_messages")
 
-# genmsg usually uses this variable to configure the install location. we typically pick
-# it up from the environment configured by rosjava_build_tools.
-#set(genjava_INSTALL_DIR "maven/org/ros/rosjava_messages")
-set(ROS_MAVEN_DEPLOYMENT_REPOSITORY $ENV{ROS_MAVEN_DEPLOYMENT_REPOSITORY})
-if(NOT ROS_MAVEN_DEPLOYMENT_REPOSITORY)
-  set(ROS_MAVEN_DEPLOYMENT_REPOSITORY "${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}")
-endif()
-
-# Generate .msg->.h for py
-# The generated .h files should be added ALL_GEN_OUTPUT_FILES_py
-#
-# Example arguments:
-#
-#   ARG_PKG      : foo_msgs
-#   ARG_MSG      : /mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg/Foo.msg
-#   ARG_IFLAGS   : -Ifoo_msgs:/mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg
-#   ARG_MSG_DEPS : ???
-#   ARG_GEN_OUTPUT_DIR : /mnt/zaphod/ros/rosjava/hydro/devel/${genjava_INSTALL_DIR}/foo_msgs
 macro(_generate_msg_java ARG_PKG ARG_MSG ARG_IFLAGS ARG_MSG_DEPS ARG_GEN_OUTPUT_DIR)
+  list(APPEND ALL_GEN_OUTPUT_FILES_java ${ARG_MSG} ${ARG_MSG_DEPS})
 
-  message(STATUS "GEN_MSG_JAVA..........._generate_msg_java")
-  message(STATUS "  ARG_PKG..............${ARG_PKG}")
-  message(STATUS "  ARG_MSG..............${ARG_MSG}")
-  message(STATUS "  ARG_IFLAGS...........${ARG_IFLAGS}")
-  message(STATUS "  ARG_MSG_DEPS.........${ARG_MSG_DEPS}")
-  message(STATUS "  ARG_GEN_OUTPUT_DIR...${ARG_GEN_OUTPUT_DIR}")
-  message(STATUS "GEN_MSG_JAVA...........done")
-  message(STATUS "CMAKE_CURRENT_BINARY_DIR.......${CMAKE_CURRENT_BINARY_DIR}")
-
-  #Append msg to output dir
-  #set(GEN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-  #file(MAKE_DIRECTORY ${GEN_OUTPUT_DIR})
-  #Create input and output filenames
-  get_filename_component(MSG_SHORT_NAME ${ARG_MSG} NAME_WE)
-
-  file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/gradle)
-
-  #set(MSG_GENERATED_NAME ${MSG_SHORT_NAME}.java)
-  #set(GEN_OUTPUT_FILE ${GEN_OUTPUT_DIR}/${MSG_GENERATED_NAME})
-  #message(STATUS "GEN_OUTPUT_FILE..........${GEN_OUTPUT_FILE}")
-  #add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
-  #  DEPENDS ${GENMSG_JAVA_BIN} ${ARG_MSG} ${ARG_MSG_DEPS}
-  #  COMMAND ${CATKIN_ENV} cmake
-  #  -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}
-  #  -m ${ARG_MSG}
-  #  ${ARG_IFLAGS}
-  #  -p ${ARG_PKG}
-  #  -o ${GEN_OUTPUT_DIR}
-  #  COMMENT "Generating Java code from MSG ${ARG_PKG}/${MSG_SHORT_NAME}"
-  #)
-
-  #list(APPEND ALL_GEN_OUTPUT_FILES_java ${GEN_OUTPUT_FILE})
-
+    # Example arguments:
+    #
+    #   ARG_PKG      : foo_msgs
+    #   ARG_MSG      : /mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg/Foo.msg
+    #   ARG_IFLAGS   : -Ifoo_msgs:/mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg
+    #   ARG_MSG_DEPS : ???
+    #   ARG_GEN_OUTPUT_DIR : /mnt/zaphod/ros/rosjava/hydro/devel/${genjava_INSTALL_DIR}/foo_msgs
+    
+    #message(STATUS "Java generator for [${ARG_PKG}][${ARG_MSG}]")
+    #message(STATUS "  ARG_IFLAGS...........${ARG_IFLAGS}")
+    #message(STATUS "  ARG_MSG_DEPS.........${ARG_MSG_DEPS}")
+    #message(STATUS "  ARG_GEN_OUTPUT_DIR...${ARG_GEN_OUTPUT_DIR}")
+    #message(STATUS "GEN_MSG_JAVA...........done")
+    #message(STATUS "CMAKE_CURRENT_BINARY_DIR.......${CMAKE_CURRENT_BINARY_DIR}")
 endmacro()
 
-#todo, these macros are practically equal. Check for input file extension instead
 macro(_generate_srv_java ARG_PKG ARG_SRV ARG_IFLAGS ARG_MSG_DEPS ARG_GEN_OUTPUT_DIR)
-
-  message(STATUS "GEN_SRV_JAVA..........._generate_srv_java")
-  #Append msg to output dir
-#  set(GEN_OUTPUT_DIR "${ARG_GEN_OUTPUT_DIR}/srv")
-#  file(MAKE_DIRECTORY ${GEN_OUTPUT_DIR})
-#
-  #Create input and output filenames
-#  get_filename_component(SRV_SHORT_NAME ${ARG_SRV} NAME_WE)
-#
-#  set(SRV_GENERATED_NAME _${SRV_SHORT_NAME}.py)
-#  set(GEN_OUTPUT_FILE ${GEN_OUTPUT_DIR}/${SRV_GENERATED_NAME})
-#
-#  add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
-#    DEPENDS ${GENSRV_PY_BIN} ${ARG_SRV} ${ARG_MSG_DEPS}
-#    COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENSRV_PY_BIN} ${ARG_SRV}
-#    ${ARG_IFLAGS}
-#    -p ${ARG_PKG}
-#    -o ${GEN_OUTPUT_DIR}
-#    COMMENT "Generating Python code from SRV ${ARG_PKG}/${SRV_SHORT_NAME}"
-#    )
-#
-#  list(APPEND ALL_GEN_OUTPUT_FILES_py ${GEN_OUTPUT_FILE})
-
+  list(APPEND ALL_GEN_OUTPUT_FILES_java ${ARG_SRV} ${ARG_MSG_DEPS})
 endmacro()
 
+# This is a bit different to the other generators - it generates the whole message package together
+# (unless there's another api I'm not aware of yet in the generator jar). It's a few milliseconds
+# of overkill generating all .java files if only one msg changed, but it's not worth the effort to
+# break that down yet.
+# 
+# To facilitate this, the ARG_GENERATED_FILES is actually just the underlying ARG_MSG and ARG_SRV
+# files which we feed the commands as DEPENDS to trigger their execution.
 macro(_generate_module_java ARG_PKG ARG_GEN_OUTPUT_DIR ARG_GENERATED_FILES)
 
-  message(STATUS "GEN_MODULE_JAVA..........._generate_module_java")
-  # generate empty __init__ to make parent folder of msg/srv a python module
-  if(NOT EXISTS ${ARG_GEN_OUTPUT_DIR}/__init__.py)
-    file(WRITE ${ARG_GEN_OUTPUT_DIR}/__init__.py "")
-  endif()
+    ################################
+    # Gradle Subproject
+    ################################
+    set(GRADLE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/java")
+    set(GRADLE_BUILD_FILE "${GRADLE_BUILD_DIR}/${ARG_PKG}/build.gradle")
+    list(APPEND ALL_GEN_OUTPUT_FILES_java ${GRADLE_BUILD_FILE})
 
-  #Append msg to output dir
-  foreach(type "msg" "srv")
-    set(GEN_OUTPUT_DIR "${ARG_GEN_OUTPUT_DIR}/${type}")
-    set(GEN_OUTPUT_FILE ${GEN_OUTPUT_DIR}/__init__.py)
+    add_custom_command(OUTPUT ${GRADLE_BUILD_FILE}
+        DEPENDS ${GENJAVA_BIN}
+        COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
+            -o ${GRADLE_BUILD_DIR}
+            -p ${ARG_PKG}
+        COMMENT "Generating Java gradle project from ${ARG_PKG}"
+    )
 
-    if(IS_DIRECTORY ${GEN_OUTPUT_DIR})
-      add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
-        DEPENDS ${GENMSG_PY_BIN} ${ARG_GENERATED_FILES}
-        COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_PY_BIN}
-        -o ${GEN_OUTPUT_DIR}
-        --initpy
-        COMMENT "Generating Python ${type} __init__.py for ${ARG_PKG}")
-      list(APPEND ALL_GEN_OUTPUT_FILES_py ${GEN_OUTPUT_FILE})
+    ################################
+    # Compile Gradle Subproject
+    ################################
+    set(ROS_GRADLE_VERBOSE $ENV{ROS_GRADLE_VERBOSE})
+    if(ROS_GRADLE_VERBOSE)
+        set(GRADLE_CMD "./gradlew")
+    else()
+        set(GRADLE_CMD "./gradlew;-q")
     endif()
+    set(GEN_OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/generated_java_messages.flag)
 
-  endforeach()
+    add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
+        DEPENDS ${GRADLE_BUILD_FILE} ${ARG_GENERATED_FILES}
+        COMMAND ${CATKIN_ENV} ${GRADLE_CMD}
+        COMMAND touch ${GEN_OUTPUT_FILE}
+        WORKING_DIRECTORY ${GRADLE_BUILD_DIR}/${ARG_PKG}
+        COMMENT "Generating Java code for ${ARG_PKG}")
+    list(APPEND ALL_GEN_OUTPUT_FILES_java ${GEN_OUTPUT_FILE})
 
+    ################################
+    # Debugging
+    ################################
+    #foreach(gen_output_file ${ALL_GEN_OUTPUT_FILES_java})
+    #    message(STATUS "ALL_GEN_OUTPUT_FILES_java..........${gen_output_file}")
+    #endforeach()
+
+    ################################
+    # Dependent Targets
+    ################################
+    # Make sure we have built gradle-rosjava_bootstrap if it is in the source workspace
+    # (otherwise package.xml will make sure it has installed via rosdep/deb.
+    #if(TARGET gradle-rosjava_bootstrap)
+        # Preference would be to add it to ${ARG_PKG}_generate_messages_java but that
+        # is not defined till after this module is parsed, so add it all
+        #add_dependencies(${ARG_PKG}_generate_messages gradle-rosjava_bootstrap)
+    #endif()
 endmacro()
 
-if(NOT EXISTS @(PROJECT_NAME)_SOURCE_DIR)
-  set(GENJAVA_INSTALL_DIR ${PYTHON_INSTALL_DIR})
-endif()

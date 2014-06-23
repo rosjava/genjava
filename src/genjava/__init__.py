@@ -35,3 +35,5 @@
 
 #__all__ = ['Time', 'Duration', 'TVal',
 #        'Message', 'SerializationError', 'DeserializationError', 'MessageException', 'struct_I']
+
+from .genjava_main import main

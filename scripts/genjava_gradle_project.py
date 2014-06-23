@@ -8,9 +8,8 @@ Converts ROS .msg files in a package into Java source code implementations.
 import os
 import sys
 
-#import genjava.generator
-import genjava.genjava_main
+import genjava
 
 if __name__ == "__main__":
-    genjava.genjava_main.genmain(sys.argv, 'genmsg_java.py') #, genpy.generator.MsgGenerator())
+    genjava.main(sys.argv)
 
