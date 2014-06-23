@@ -6,13 +6,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(genjava)
 
 ##############################################################################
-# Dependencies
+# Find Package
 ##############################################################################
 
 find_package(catkin REQUIRED COMPONENTS genmsg)
 
 ##############################################################################
-# Package
+# Catkin
 ##############################################################################
 
 catkin_package(
@@ -20,16 +20,23 @@ catkin_package(
   CFG_EXTRAS genjava-extras.cmake
 )
 
+catkin_python_setup()
+
+##############################################################################
+# Installs
+##############################################################################
+
 add_subdirectory(scripts)
 
-message(STATUS "GENMSG_LANGS_DESTINATION...........${GENMSG_LANGS_DESTINATION}")
 file(WRITE ${CATKIN_DEVEL_PREFIX}/${GENMSG_LANGS_DESTINATION}/genjava "Java")
 install(FILES ${CATKIN_DEVEL_PREFIX}/${GENMSG_LANGS_DESTINATION}/genjava
   DESTINATION ${GENMSG_LANGS_DESTINATION})
 
-catkin_python_setup()
+##############################################################################
+# Tests
+##############################################################################
 
-if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(test)
-endif()
+#if(CATKIN_ENABLE_TESTING)
+#  catkin_add_nosetests(test)
+#endif()
 

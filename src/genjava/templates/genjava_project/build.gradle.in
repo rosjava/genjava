@@ -1,0 +1,85 @@
+/*
+ * Copyright (C) 2014 %(author)s
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
+buildscript {
+    def rosMavenPath = "$System.env.ROS_MAVEN_PATH".split(':').collect { 'file://' + it }
+    def rosMavenRepository = "$System.env.ROS_MAVEN_REPOSITORY"
+    repositories {
+        rosMavenPath.each { p ->
+            maven {
+                url p
+            }
+        }
+        mavenLocal()
+        maven {
+            url rosMavenRepository
+        }
+    }
+    dependencies {
+        classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '[0.1,0.2)'
+    }
+}
+
+apply plugin: 'ros-java'
+group 'com.github.rosjava.%(project_name)s'
+version = '%(project_version)s'
+
+ext {
+    generated_sources_directory = "${projectDir}/src/main/java"
+}
+
+task generateSources (type: JavaExec) {
+    description = "Generate sources for %(project_name)s"
+    outputs.dir(file(generated_sources_directory))
+    args = new ArrayList<String>([generated_sources_directory, '--package-path=%(pkg_directory)s', '%(project_name)s'])
+    classpath = configurations.runtime
+    main = 'org.ros.internal.message.GenerateInterfaces'
+    tasks.compileJava.source outputs.files
+}
+
+dependencies {
+  compile 'org.ros.rosjava_bootstrap:message_generation:[0.1,)'
+  %(msg_dependencies)s
+}
+
+task info << {
+    println "\nProject Info"
+    println "============\n"
+    println "Name          : ${rootProject}"
+    println "Dir           : ${projectDir}"
+    println "Group         : ${group}"
+    println "Version       : ${version}"
+    println "Configurations: " + configurations
+
+    println "\nPackage Info"
+    println "============\n"
+    println "Name          : %(project_name)s"
+    println "Dir           : %(pkg_directory)s"
+
+    println "\nGenerate Info"
+    println "============\n"
+    println "Output Dir    : ${generated_sources_directory}"
+    println "Task Args     : " + tasks["generateSources"].args
+    tasks["generateSources"].outputs.getFiles().getAsFileTree().each {
+        println "Files         : ${it}"
+    }
+}
+
+defaultTasks 'publishMavenJavaPublicationToMavenRepository'
