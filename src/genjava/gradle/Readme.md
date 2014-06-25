@@ -1,3 +1,4 @@
-This is not installed, but it gets used to generate the gradle wrapper for a project.
+This used to generate the gradle wrapper for a project. Simply untar it.
+When creating the tarball, simply run the following command in any gradle projects root.
 
-It is currently the gradle wrapper supporting gradle 1.9.
+> tar -cvzf gradle.tar.gz gradlew gradle gradlew.bat

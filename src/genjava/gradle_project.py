@@ -9,8 +9,6 @@ from __future__ import print_function
 import os
 import shutil
 
-# local imports
-#import utils
 from catkin_pkg.packages import find_packages
 import rospkg
 
@@ -45,16 +43,21 @@ def author_name():
 
 
 import subprocess
+import tarfile
 
 
 def create_gradle_wrapper(repo_path):
-    gradle_binary = os.path.join(os.path.dirname(__file__), 'gradle', 'gradlew')
-    cmd = [gradle_binary, '-p', repo_path, 'wrapper']
-    print("Creating gradle wrapper: %s" % ' '.join(cmd))
-    try:
-        subprocess.check_call(cmd)
-    except subprocess.CalledProcessError:
-        raise subprocess.CalledProcessError("failed to create the gradle wrapper.")
+    archive_file = os.path.join(os.path.dirname(__file__), 'gradle', 'gradle.tar.gz')
+    archive = tarfile.open(archive_file)
+    archive.extractall(path=repo_path)
+    archive.close()
+#     gradle_binary = os.path.join(os.path.dirname(__file__), 'gradle', 'gradlew')
+#     cmd = [gradle_binary, '-p', repo_path, 'wrapper']
+#     print("Creating gradle wrapper: %s" % ' '.join(cmd))
+#     try:
+#         subprocess.check_call(cmd)
+#     except subprocess.CalledProcessError:
+#         raise subprocess.CalledProcessError("failed to create the gradle wrapper.")
 
 
 def read_template(tmplf):
