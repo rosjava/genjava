@@ -8,7 +8,7 @@ from __future__ import print_function
 
 import os
 import shutil
-
+import subprocess
 from catkin_pkg.packages import find_packages
 import rospkg
 
@@ -98,7 +98,7 @@ def create_dependency_string(project_name, msg_package_index):
             dependency_package = msg_package_index[dep.name]
         except KeyError:
             continue  # it's not a message package
-        gradle_dependency_string += "compile 'org.ros.rosjava_messages:" + dependency_package.name + ":" + dependency_package.version + "'\n"
+        gradle_dependency_string += "  compile 'org.ros.rosjava_messages:" + dependency_package.name + ":" + dependency_package.version + "'\n"
     return gradle_dependency_string
 
 
@@ -120,7 +120,8 @@ def create_msg_package_index():
     ros_paths = [x for x in ros_paths.split(':') if x]
     for path in reversed(ros_paths):  # make sure we pick up the source overlays last
         for unused_package_path, package in find_packages(path).items():
-            if 'message_generation' in [dep.name for dep in package.build_depends]:
+            if ('message_generation' in [dep.name for dep in package.build_depends] or
+               'genmsg' in [dep.name for dep in package.build_depends]):
 #                 print(package.name)
 #                 print("  version: %s" % package.version)
 #                 print("  dependencies: ")
@@ -153,3 +154,17 @@ def create(msg_pkg_name, output_dir):
     pkg_directory = os.path.dirname(msg_package_index[msg_pkg_name].filename)
     msg_pkg_version = msg_package_index[msg_pkg_name].version
     populate_project(msg_pkg_name, msg_pkg_version, pkg_directory, genjava_gradle_dir, msg_dependencies)
+
+
+def build(msg_pkg_name, output_dir, verbosity):
+    droppings_file = os.path.join(output_dir, msg_pkg_name, 'droppings')
+    if not os.path.isfile(droppings_file):
+        #print("Someone already left droppings here! %s" % droppings_file)
+        return
+    print("Scooping the droppings! [%s]" % droppings_file)
+    os.remove(droppings_file)
+    cmd = ['./gradlew']
+    if not verbosity:
+        cmd.append('--quiet')
+    print("COMMAND........................%s" % cmd)
+    subprocess.call(cmd, stderr=subprocess.STDOUT,)

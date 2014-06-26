@@ -40,51 +40,72 @@ endmacro()
 # To facilitate this, the ARG_GENERATED_FILES is actually just the underlying ARG_MSG and ARG_SRV
 # files which we feed the commands as DEPENDS to trigger their execution.
 macro(_generate_module_java ARG_PKG ARG_GEN_OUTPUT_DIR ARG_GENERATED_FILES)
-
     ################################
     # Gradle Subproject
     ################################
     set(GRADLE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/java")
     set(GRADLE_BUILD_FILE "${GRADLE_BUILD_DIR}/${ARG_PKG}/build.gradle")
     list(APPEND ALL_GEN_OUTPUT_FILES_java ${GRADLE_BUILD_FILE})
-
+    # a marker for the compiling script later to discover
+    # this command will only get run when an underlying dependency changes, whereas the compiling
+    # add_custom_target always runs (this was so we can ensure compile time dependencies are ok).
+    # So we leave this dropping to inform it when gradle needs to run so that we can skip by
+    # without the huge latency whenever we don't.
+    set(DROPPINGS_FILE "${GRADLE_BUILD_DIR}/${ARG_PKG}/droppings")
     add_custom_command(OUTPUT ${GRADLE_BUILD_FILE}
-        DEPENDS ${GENJAVA_BIN}
+        DEPENDS ${GENJAVA_BIN} ${ARG_GENERATED_FILES}
         COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
             -o ${GRADLE_BUILD_DIR}
             -p ${ARG_PKG}
+        COMMAND touch ${DROPPINGS_FILE}
         COMMENT "Generating Java gradle project from ${ARG_PKG}"
     )
 
     ################################
     # Compile Gradle Subproject
     ################################
+    # Push the compile back to the last thing that gets done before the generate messages
+    # is done for this package (see the PRE_LINK coupled with the TARGET option below). This
+    # is different to genpy, gencpp since it's a compile step. If you don't force it to be
+    # the last thing, then it may be trying to compile while dependencies are still getting
+    # themselves ready for ${ARG_PKG}_generate_messages in parallel.
+    # (i.e. beware of sequencing add_custom_command, it usually has to compete)
     set(ROS_GRADLE_VERBOSE $ENV{ROS_GRADLE_VERBOSE})
     if(ROS_GRADLE_VERBOSE)
-        set(GRADLE_CMD "./gradlew")
+        set(verbosity "--verbosity")
     else()
-        set(GRADLE_CMD "./gradlew;-q")
+        set(verbosity "")
     endif()
-    set(GEN_OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/generated_java_messages.flag)
 
-    add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
+    add_custom_target(${ARG_PKG}_generate_messages_java_gradle
+        COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
+            ${verbosity}
+            --compile
+            -o ${GRADLE_BUILD_DIR}
+            -p ${ARG_PKG}
         DEPENDS ${GRADLE_BUILD_FILE} ${ARG_GENERATED_FILES}
-        COMMAND ${CATKIN_ENV} ${GRADLE_CMD}
-        COMMAND touch ${GEN_OUTPUT_FILE}
         WORKING_DIRECTORY ${GRADLE_BUILD_DIR}/${ARG_PKG}
-        COMMENT "Generating Java code for ${ARG_PKG}")
-    list(APPEND ALL_GEN_OUTPUT_FILES_java ${GEN_OUTPUT_FILE})
-
-    ################################
-    # Debugging
-    ################################
-    #foreach(gen_output_file ${ALL_GEN_OUTPUT_FILES_java})
-    #    message(STATUS "ALL_GEN_OUTPUT_FILES_java..........${gen_output_file}")
-    #endforeach()
+        COMMENT "Compiling Java code for ${ARG_PKG}"
+    )
+    add_dependencies(${ARG_PKG}_generate_messages ${ARG_PKG}_generate_messages_java_gradle)
 
     ################################
     # Dependent Targets
     ################################
+    # This is a bad hack that needs to disappear. e.g.
+    # - topic_tools and roscpp are both packages with a couple of msgs
+    # - topic tools messages doesn't actually depend on roscpp messages
+    # this is guarded, so it's not doubling up on work when called from catkin_package (roscpp does this too)
+    # and we need it to get access to the build_depends list just in case people called generate_messages before catkin_package()
+    if(NOT DEFINED ${ARG_PKG}_BUILD_DEPENDS)
+        catkin_package_xml(DIRECTORY ${PROJECT_SOURCE_DIR})
+    endif()
+    foreach(depends ${${ARG_PKG}_BUILD_DEPENDS})
+        if(TARGET ${depends}_generate_messages_java_gradle)
+            message(STATUS "Adding dependency.....${depends}_generate_messages -> ${ARG_PKG}_generate_messages")
+            add_dependencies(${ARG_PKG}_generate_messages_java_gradle ${depends}_generate_messages_java_gradle)
+        endif()
+    endforeach()
     # Make sure we have built gradle-rosjava_bootstrap if it is in the source workspace
     # (otherwise package.xml will make sure it has installed via rosdep/deb.
     #if(TARGET gradle-rosjava_bootstrap)
@@ -92,5 +113,12 @@ macro(_generate_module_java ARG_PKG ARG_GEN_OUTPUT_DIR ARG_GENERATED_FILES)
         # is not defined till after this module is parsed, so add it all
         #add_dependencies(${ARG_PKG}_generate_messages gradle-rosjava_bootstrap)
     #endif()
+
+    ################################
+    # Debugging
+    ################################
+    #foreach(gen_output_file ${ALL_GEN_OUTPUT_FILES_java})
+    #    message(STATUS "ALL_GEN_OUTPUT_FILES_java..........${gen_output_file}")
+    #endforeach()
 endmacro()
 

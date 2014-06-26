@@ -60,6 +60,8 @@ def parse_arguments(argv):
     #parser.add_argument('-m', '--message', action='store', help='the message file')
     parser.add_argument('-p', '--package', action='store', help='package to find the message file')
     parser.add_argument('-o', '--output-dir', action='store', help='output directory for the java code (e.g. build/foo_msgs)')
+    parser.add_argument('-c', '--compile', default=False, action='store_true', help='switch to compile mode (default is generating mode)')
+    parser.add_argument('-v', '--verbosity', default=False, action='store_true', help='enable verbosity in debugging (false)')
     #parser.add_argument('-I', '--include-path', action='append', help="include paths to the package and deps msg files")
     #myargs = rospy.myargv(argv=sys.argv)
     #return parser.parse_args(args=myargs[1:])
@@ -73,4 +75,7 @@ def parse_arguments(argv):
 def main(argv):
     args = parse_arguments(argv[1:])
     #print("genjava %s/%s" % (args.package, args.message))
-    gradle_project.create(args.package, args.output_dir)
+    if not args.compile:
+        gradle_project.create(args.package, args.output_dir)
+    else:
+        gradle_project.build(args.package, args.output_dir, args.verbosity)

@@ -55,8 +55,15 @@ task generateSources (type: JavaExec) {
 }
 
 dependencies {
-  compile 'org.ros.rosjava_bootstrap:message_generation:[0.1,)'
-  %(msg_dependencies)s
+    compile 'org.ros.rosjava_bootstrap:message_generation:[0.1,)'
+    %(msg_dependencies)s
+}
+
+jar {
+    manifest = osgiManifest {
+        classesDir = sourceSets.main.output.classesDir
+        classpath = configurations.runtime
+    }
 }
 
 task info << {
@@ -81,5 +88,19 @@ task info << {
         println "Files         : ${it}"
     }
 }
+
+/* Damon's message generator doesn't catch every message. It expects everything to be nicely under 'msg'
+ * and that directory to be under the package root. It also expects every msg it finds should be buildable.
+ * It kinda works until now because it ignores any package which doesn't conform to this and those are just
+ * test packages (we hope).
+ *  
+ * Until we get this properly fixed (it fails in genjava), then we use the following bugfix to deal with the
+ * 'Could not copy MANIFEST.MF...' error that occurs when no sources are to be made for an artifact.
+ */
+task bugfixtask << {
+    mkdir sourceSets.main.output.classesDir
+}
+
+jar.dependsOn(bugfixtask)
 
 defaultTasks 'publishMavenJavaPublicationToMavenRepository'
