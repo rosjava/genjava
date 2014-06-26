@@ -33,11 +33,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '[0.1,0.2)'
+        classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '[0.2,0.3)'
     }
 }
 
 apply plugin: 'ros-java'
+apply plugin: 'osgi'
 group 'org.ros.rosjava_messages'
 version = '%(project_version)s'
 
@@ -55,7 +56,7 @@ task generateSources (type: JavaExec) {
 }
 
 dependencies {
-    compile 'org.ros.rosjava_bootstrap:message_generation:[0.1,)'
+    compile 'org.ros.rosjava_bootstrap:message_generation:[0.2,0.3)'
     %(msg_dependencies)s
 }
 
