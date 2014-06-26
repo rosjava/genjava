@@ -161,10 +161,10 @@ def build(msg_pkg_name, output_dir, verbosity):
     if not os.path.isfile(droppings_file):
         #print("Someone already left droppings here! %s" % droppings_file)
         return
-    print("Scooping the droppings! [%s]" % droppings_file)
+    #print("Scooping the droppings! [%s]" % droppings_file)
     os.remove(droppings_file)
     cmd = ['./gradlew']
     if not verbosity:
         cmd.append('--quiet')
-    print("COMMAND........................%s" % cmd)
+    #print("COMMAND........................%s" % cmd)
     subprocess.call(cmd, stderr=subprocess.STDOUT,)
