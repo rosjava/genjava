@@ -108,11 +108,11 @@ macro(_generate_module_java ARG_PKG ARG_GEN_OUTPUT_DIR ARG_GENERATED_FILES)
     endforeach()
     # Make sure we have built gradle-rosjava_bootstrap if it is in the source workspace
     # (otherwise package.xml will make sure it has installed via rosdep/deb.
-    #if(TARGET gradle-rosjava_bootstrap)
+    if(TARGET gradle-rosjava_bootstrap)
         # Preference would be to add it to ${ARG_PKG}_generate_messages_java but that
         # is not defined till after this module is parsed, so add it all
-        #add_dependencies(${ARG_PKG}_generate_messages gradle-rosjava_bootstrap)
-    #endif()
+        add_dependencies(${ARG_PKG}_generate_messages_java_gradle gradle-rosjava_bootstrap)
+    endif()
 
     ################################
     # Debugging
