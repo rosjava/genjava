@@ -140,9 +140,9 @@ def create(msg_pkg_name, output_dir):
     :param dict msg_package_index:  { name : catkin_pkg.Package }
     :param str output_dir:
     '''
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
     genjava_gradle_dir = os.path.join(output_dir, msg_pkg_name)
+    if os.path.exists(genjava_gradle_dir):
+        shutil.rmtree(genjava_gradle_dir)
     os.makedirs(genjava_gradle_dir)
     msg_package_index = create_msg_package_index()
     if msg_pkg_name not in msg_package_index.keys():
