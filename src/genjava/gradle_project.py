@@ -157,13 +157,31 @@ def create(msg_pkg_name, output_dir):
 
 
 def build(msg_pkg_name, output_dir, verbosity):
+    # Are there droppings? If yes, then this genjava has marked this package as
+    # needing a compile (it's new, or some msg file changed).
     droppings_file = os.path.join(output_dir, msg_pkg_name, 'droppings')
     if not os.path.isfile(droppings_file):
-        #print("Someone already left droppings here! %s" % droppings_file)
+        #print("Nobody left any droppings - nothing to do! %s" % droppings_file)
         return
     #print("Scooping the droppings! [%s]" % droppings_file)
     os.remove(droppings_file)
     cmd = ['./gradlew']
+    if not verbosity:
+        cmd.append('--quiet')
+    #print("COMMAND........................%s" % cmd)
+    subprocess.call(cmd, stderr=subprocess.STDOUT,)
+
+
+def standalone_create_and_build(msg_pkg_name, output_dir, verbosity):
+    '''
+    Brute force create and build the message artifact distregarding any smarts
+    such as whether message files changed or not. For use with the standalone
+    package builder.
+    '''
+    create(msg_pkg_name, output_dir)
+    working_directory = os.path.join(os.path.abspath(output_dir), msg_pkg_name)
+    gradle_wrapper = os.path.join(os.path.abspath(output_dir), msg_pkg_name, 'gradlew')
+    cmd = [gradle_wrapper, '-p', working_directory]
     if not verbosity:
         cmd.append('--quiet')
     #print("COMMAND........................%s" % cmd)

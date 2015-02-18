@@ -36,14 +36,14 @@
 
 from __future__ import print_function
 import argparse
-#import os
+import os
 #import sys
 #import traceback
 #import genmsg
 #import genmsg.command_line
 
-#from genmsg import MsgGenerationException
-#from . generate_initpy import write_modules
+import rosjava_build_tools
+import catkin_pkg.packages
 from . import gradle_project
 
 ##############################################################################
@@ -52,16 +52,14 @@ from . import gradle_project
 
 
 def parse_arguments(argv):
-    '''
-      The include path has a special format, e.g.
-         -Ifoo_msgs:/mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg
-    '''
     parser = argparse.ArgumentParser(description='Generate java code for a single ros message.')
     #parser.add_argument('-m', '--message', action='store', help='the message file')
     parser.add_argument('-p', '--package', action='store', help='package to find the message file')
     parser.add_argument('-o', '--output-dir', action='store', help='output directory for the java code (e.g. build/foo_msgs)')
     parser.add_argument('-c', '--compile', default=False, action='store_true', help='switch to compile mode (default is generating mode)')
     parser.add_argument('-v', '--verbosity', default=False, action='store_true', help='enable verbosity in debugging (false)')
+    #  The include path has a special format, e.g.
+    #     -Ifoo_msgs:/mnt/zaphod/ros/rosjava/hydro/src/foo_msgs/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg
     #parser.add_argument('-I', '--include-path', action='append', help="include paths to the package and deps msg files")
     #myargs = rospy.myargv(argv=sys.argv)
     #return parser.parse_args(args=myargs[1:])
@@ -73,9 +71,41 @@ def parse_arguments(argv):
 
 
 def main(argv):
+    '''
+    Used as the builder for genjava on the fly as other message language interfaces
+    are built. There is a bit of smarts inside this to work out when msgs have
+    changed and so forth.
+    '''
     args = parse_arguments(argv[1:])
     #print("genjava %s/%s" % (args.package, args.message))
     if not args.compile:
         gradle_project.create(args.package, args.output_dir)
     else:
         gradle_project.build(args.package, args.output_dir, args.verbosity)
+
+
+def standalone_parse_arguments(argv):
+    parser = argparse.ArgumentParser(description='Generate artifacts for any/all discoverable message packages.')
+    parser.add_argument('-p', '--package', action='store', default=None, help='package to generate (if not specified, all will be built)')
+    parser.add_argument('-o', '--output-dir', action='store', default='build', help='output directory for the java code (e.g. build/foo_msgs)')
+    parser.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbosity in debugging (false)')
+    return parser.parse_args(argv)
+
+
+def standalone_main(argv):
+    '''
+    This guy is a brute force standalone message artifact generator. It parses
+    the environment looking for the package (or just all) you wish to
+    generate artifacts for.
+    '''
+    args = standalone_parse_arguments(argv[1:])
+    #print("genjava %s/%s/%s" % (args.package, args.output_dir, args.verbose))
+
+    if args.package is not None:
+        sorted_package_tuples = rosjava_build_tools.catkin.index_message_package_dependencies_from_local_environment(package_name=args.package)
+    else:
+        sorted_package_tuples = rosjava_build_tools.catkin.index_message_package_dependencies_from_local_environment()
+
+    print("Generating message artifacts for: \n%s" % [p.name for (unused_relative_path, p) in sorted_package_tuples])
+    for unused_relative_path, p in sorted_package_tuples:
+        gradle_project.standalone_create_and_build(p.name, args.output_dir, args.verbose)
