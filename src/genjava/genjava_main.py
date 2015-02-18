@@ -89,6 +89,7 @@ def standalone_parse_arguments(argv):
     parser.add_argument('-p', '--package', action='store', default=None, help='package to generate (if not specified, all will be built)')
     parser.add_argument('-o', '--output-dir', action='store', default='build', help='output directory for the java code (e.g. build/foo_msgs)')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbosity in debugging (false)')
+    parser.add_argument('-f', '--fakeit', default=False, action='store_true', help='dont build, just list the packages it would build (false)')
     return parser.parse_args(argv)
 
 
@@ -107,5 +108,6 @@ def standalone_main(argv):
         sorted_package_tuples = rosjava_build_tools.catkin.index_message_package_dependencies_from_local_environment()
 
     print("Generating message artifacts for: \n%s" % [p.name for (unused_relative_path, p) in sorted_package_tuples])
-    for unused_relative_path, p in sorted_package_tuples:
-        gradle_project.standalone_create_and_build(p.name, args.output_dir, args.verbose)
+    if not args.fakeit:
+        for unused_relative_path, p in sorted_package_tuples:
+            gradle_project.standalone_create_and_build(p.name, args.output_dir, args.verbose)
