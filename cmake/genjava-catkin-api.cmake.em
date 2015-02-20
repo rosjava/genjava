@@ -1,11 +1,11 @@
 @[if DEVELSPACE]@
 # location of scripts in develspace
-  set(GENJAVA_BIN_DIR "@(CMAKE_CURRENT_SOURCE_DIR)/scripts")
+  set(GENJAVA_MESSAGE_ARTIFACTS_BIN_DIR "@(CMAKE_CURRENT_SOURCE_DIR)/scripts")
 @[else]@
-  set(GENJAVA_BIN_DIR "${GENJAVA_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
+  set(GENJAVA_MESSAGE_ARTIFACTS_BIN_DIR "${GENJAVA_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
 @[end if]@
 
-set(GENJAVA_BIN ${GENJAVA_BIN_DIR}/genjava_message_artifacts)
+set(GENJAVA_MESSAGE_ARTIFACTS_BIN ${GENJAVA_MESSAGE_ARTIFACTS_BIN_DIR}/genjava_message_artifacts)
 set(genjava_INSTALL_DIR "maven/org/ros/rosjava_messages")
 
 include(CMakeParseArguments)
@@ -39,7 +39,7 @@ macro(generate_rosjava_messages)
 
   add_custom_target(${PROJECT_NAME}_generate_artifacts
     ALL
-    COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
+    COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_MESSAGE_ARTIFACTS_BIN}
         ${verbosity}
         --avoid-rebuilding
         -o ${CMAKE_CURRENT_BINARY_DIR}
