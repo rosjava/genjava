@@ -36,18 +36,21 @@ macro(generate_rosjava_messages)
       set(verbosity "")
   endif()
   string(REPLACE ";" " " package_list "${ARG_PACKAGES}")
-  add_custom_target(${PROJECT_NAME}_rosjava_messages
+
+  add_custom_target(${PROJECT_NAME}_generate_artifacts
     ALL
     COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
         ${verbosity}
         -o ${CMAKE_CURRENT_BINARY_DIR}
         -p ${ARG_PACKAGES} # this has to be a list argument so it separates each arg (not a single string!)
+    DEPENDS
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Compiling rosjava message artifacts for [${package_list}]"
   )
+  set(build_dir_to_be_cleaned_list)
   foreach(pkg ${ARG_PACKAGES})
-    message(STATUS "Additional clean file.......${CMAKE_CURRENT_BINARY_DIR}/${pkg}/build.gradle")
-    set_directory_properties(PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${pkg}/build.gradle)
-    add_dependencies(${PROJECT_NAME}_rosjava_messages ${pkg}_generate_messages)
+    list(APPEND build_dir_to_be_cleaned_list "${CMAKE_CURRENT_BINARY_DIR}/${pkg}")
+    add_dependencies(${PROJECT_NAME}_generate_artifacts ${pkg}_generate_messages)
   endforeach()
+  set_directory_properties(PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${build_dir_to_be_cleaned_list}")
 endmacro()
