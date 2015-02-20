@@ -17,7 +17,9 @@ find_package(catkin REQUIRED COMPONENTS genmsg)
 
 catkin_package(
   CATKIN_DEPENDS genmsg
-  CFG_EXTRAS genjava-extras.cmake
+  CFG_EXTRAS
+    genjava-extras.cmake
+    genjava-catkin-api.cmake
 )
 
 catkin_python_setup()
