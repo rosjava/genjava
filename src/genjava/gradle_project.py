@@ -172,12 +172,20 @@ def build(msg_pkg_name, output_dir, verbosity):
     subprocess.call(cmd, stderr=subprocess.STDOUT,)
 
 
-def standalone_create_and_build(msg_pkg_name, output_dir, verbosity):
+def standalone_create_and_build(msg_pkg_name, output_dir, verbosity, avoid_rebuilding=False):
     '''
-    Brute force create and build the message artifact distregarding any smarts
+    Brute force create and build the message artifact disregarding any smarts
     such as whether message files changed or not. For use with the standalone
     package builder.
+    :param str msg_pkg_name:
+    :param str output_dir:
+    :param bool verbosity:
+    :param bool avoid_rebuilding: don't rebuild if working dir is already there
+    :return bool : whether it built, or skipped because it was avoiding a rebuild
     '''
+    genjava_gradle_dir = os.path.join(output_dir, msg_pkg_name)
+    if os.path.exists(genjava_gradle_dir) and avoid_rebuilding:
+        return False
     create(msg_pkg_name, output_dir)
     working_directory = os.path.join(os.path.abspath(output_dir), msg_pkg_name)
     gradle_wrapper = os.path.join(os.path.abspath(output_dir), msg_pkg_name, 'gradlew')
@@ -186,3 +194,4 @@ def standalone_create_and_build(msg_pkg_name, output_dir, verbosity):
         cmd.append('--quiet')
     #print("COMMAND........................%s" % cmd)
     subprocess.call(cmd, stderr=subprocess.STDOUT,)
+    return True

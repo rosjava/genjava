@@ -41,6 +41,7 @@ macro(generate_rosjava_messages)
     ALL
     COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENJAVA_BIN}
         ${verbosity}
+        --avoid-rebuilding
         -o ${CMAKE_CURRENT_BINARY_DIR}
         -p ${ARG_PACKAGES} # this has to be a list argument so it separates each arg (not a single string!)
     DEPENDS
