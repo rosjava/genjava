@@ -3,7 +3,7 @@
 set(GENJAVA_BIN_DIR "@(CMAKE_CURRENT_SOURCE_DIR)/scripts")
 @[else]@
 # location of scripts in installspace
-set(GENJAVA_BIN_DIR "${GENJAVA_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
+set(GENJAVA_BIN_DIR "${genjava_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
 @[end if]@
 
 set(GENJAVA_BIN ${GENJAVA_BIN_DIR}/genjava_gradle_project.py)
