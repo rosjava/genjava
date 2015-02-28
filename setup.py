@@ -8,6 +8,10 @@ d = generate_distutils_setup(
     package_dir={'': 'src'},
     requires=['genmsg'],
     scripts=['scripts/genjava_message_artifacts'],
+    package_data = {'genjava': [
+           'templates/genjava_project/*',
+           'gradle/*',
+        ]},
 )
 
 setup(**d)
