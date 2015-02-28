@@ -2,6 +2,11 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.3 (2015-02-28)
+------------------
+* add data parts to the python package.
+* Contributors: Daniel Stonier
+
 0.1.2 (2015-02-27)
 ------------------
 * bugfix genjava dir variable settings, fixes `#1 <https://github.com/rosjava/genjava/issues/1>`_
