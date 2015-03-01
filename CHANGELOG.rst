@@ -2,6 +2,11 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.4 (2015-03-01)
+------------------
+* generate_rosjava_messages cmake api needs the rosjava environment.
+* Contributors: Daniel Stonier
+
 0.1.3 (2015-02-28)
 ------------------
 * add data parts to the python package.
