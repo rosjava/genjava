@@ -9,14 +9,14 @@ project(genjava)
 # Find Package
 ##############################################################################
 
-find_package(catkin REQUIRED COMPONENTS genmsg)
+find_package(catkin REQUIRED COMPONENTS genmsg rosjava_build_tools)
 
 ##############################################################################
 # Catkin
 ##############################################################################
 
 catkin_package(
-  CATKIN_DEPENDS genmsg
+  CATKIN_DEPENDS genmsg rosjava_build_tools
   CFG_EXTRAS
     genjava-extras.cmake
     genjava-catkin-api.cmake
