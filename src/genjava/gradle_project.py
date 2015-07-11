@@ -149,7 +149,7 @@ def create(msg_pkg_name, output_dir):
     os.makedirs(genjava_gradle_dir)
     msg_package_index = create_msg_package_index()
     if msg_pkg_name not in msg_package_index.keys():
-        raise IOError("could not find %s on the ros package path" % msg_pkg_name)
+        raise IOError("could not find %s among message packages. Does the that package have a <build_depend> on message_generation in its package.xml?" % msg_pkg_name)
 
     msg_dependencies = create_dependency_string(msg_pkg_name, msg_package_index)
 
