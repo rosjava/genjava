@@ -2,6 +2,10 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2016-12-15)
+------------------
+* Updates for Kinetic release.
+
 0.1.4 (2015-03-01)
 ------------------
 * generate_rosjava_messages cmake api needs the rosjava environment.
