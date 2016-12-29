@@ -104,4 +104,4 @@ task bugfixtask << {
 
 jar.dependsOn(bugfixtask)
 
-defaultTasks 'publishMavenJavaPublicationToMavenRepository'
+defaultTasks 'publish'
