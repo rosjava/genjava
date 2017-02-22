@@ -2,6 +2,12 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* publishMavenJavaPublicationToMavenRepository -> publish
+* Gradle 2.2.1 -> 2.14.1
+* Contributors: Julian Cerruti
+
 0.3.0 (2016-12-15)
 ------------------
 * Updates for Kinetic release.
