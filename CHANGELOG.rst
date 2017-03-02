@@ -2,6 +2,10 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.2 (2017-03-02)
+------------------
+* bugfix abspath problems for gradle
+
 0.3.1 (2017-02-22)
 ------------------
 * publishMavenJavaPublicationToMavenRepository -> publish
