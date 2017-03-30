@@ -154,7 +154,7 @@ def create(msg_pkg_name, output_dir):
     msg_dependencies = create_dependency_string(msg_pkg_name, msg_package_index)
 
     create_gradle_wrapper(genjava_gradle_dir)
-    pkg_directory = os.path.dirname(msg_package_index[msg_pkg_name].filename)
+    pkg_directory = os.path.abspath(os.path.dirname(msg_package_index[msg_pkg_name].filename))
     msg_pkg_version = msg_package_index[msg_pkg_name].version
     populate_project(msg_pkg_name, msg_pkg_version, pkg_directory, genjava_gradle_dir, msg_dependencies)
 
