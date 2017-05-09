@@ -2,6 +2,11 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updating message_generation dependency to kinetic range in template to generate messages properly.
+* Contributors: Juan Ignacio Ubeira, Julian Cerruti
+
 0.3.2 (2017-03-02)
 ------------------
 * bugfix abspath problems for gradle
