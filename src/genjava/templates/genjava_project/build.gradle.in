@@ -67,26 +67,28 @@ jar {
     }
 }
 
-task info << {
-    println "\nProject Info"
-    println "============\n"
-    println "Name          : ${rootProject}"
-    println "Dir           : ${projectDir}"
-    println "Group         : ${group}"
-    println "Version       : ${version}"
-    println "Configurations: " + configurations
+task info {
+    doLast {
+        println "\nProject Info"
+        println "============\n"
+        println "Name          : ${rootProject}"
+        println "Dir           : ${projectDir}"
+        println "Group         : ${group}"
+        println "Version       : ${version}"
+        println "Configurations: " + configurations
 
-    println "\nPackage Info"
-    println "============\n"
-    println "Name          : %(project_name)s"
-    println "Dir           : %(pkg_directory)s"
+        println "\nPackage Info"
+        println "============\n"
+        println "Name          : %(project_name)s"
+        println "Dir           : %(pkg_directory)s"
 
-    println "\nGenerate Info"
-    println "============\n"
-    println "Output Dir    : ${generated_sources_directory}"
-    println "Task Args     : " + tasks["generateSources"].args
-    tasks["generateSources"].outputs.getFiles().getAsFileTree().each {
-        println "Files         : ${it}"
+        println "\nGenerate Info"
+        println "============\n"
+        println "Output Dir    : ${generated_sources_directory}"
+        println "Task Args     : " + tasks["generateSources"].args
+        tasks["generateSources"].outputs.getFiles().getAsFileTree().each {
+            println "Files         : ${it}"
+        }
     }
 }
 
@@ -98,8 +100,10 @@ task info << {
  * Until we get this properly fixed (it fails in genjava), then we use the following bugfix to deal with the
  * 'Could not copy MANIFEST.MF...' error that occurs when no sources are to be made for an artifact.
  */
-task bugfixtask << {
-    mkdir sourceSets.main.output.classesDir
+task bugfixtask {
+    doLast {
+        mkdir sourceSets.main.output.classesDir
+    }
 }
 
 jar.dependsOn(bugfixtask)
