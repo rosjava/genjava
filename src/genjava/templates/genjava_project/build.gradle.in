@@ -67,8 +67,8 @@ jar {
     }
 }
 
-/* Uncomment the following lines in package://genjava/templates/genjava_project/build.gradle.in to enable Java 6
- * cross compilation for ROS messages.
+/* Uncomment the following lines in package://genjava/src/genjava/templates/genjava_project/build.gradle.in to
+ * enable Java 6 cross compilation for ROS messages.
  */
 // sourceCompatibility = 1.6
 // targetCompatibility = 1.6
