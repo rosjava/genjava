@@ -2,8 +2,8 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.4 (2019-01-23)
+------------------
 * Updating Gradle version to 4.10.2.
 * Minor fixes: cross compilation instruction, typos, dependency warnings.
 * Contributors: Arne, Daniel Ingram, Johannes Meyer, Juan Ignacio Ubeira, Julian Cerruti
