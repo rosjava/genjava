@@ -2,6 +2,12 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updating Gradle version to 4.10.2.
+* Minor fixes: cross compilation instruction, typos, dependency warnings.
+* Contributors: Arne, Daniel Ingram, Johannes Meyer, Juan Ignacio Ubeira, Julian Cerruti
+
 0.3.3 (2017-05-09)
 ------------------
 * Updating message_generation dependency to kinetic range in template to generate messages properly.
