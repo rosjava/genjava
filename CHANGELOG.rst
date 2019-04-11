@@ -2,6 +2,10 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Initial Melodic release: updating dependencies to the proper ranges.
+
 0.3.4 (2019-01-23)
 ------------------
 * Updating Gradle version to 4.10.2.
