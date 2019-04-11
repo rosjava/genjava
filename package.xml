@@ -1,6 +1,6 @@
 <package>
   <name>genjava</name>
-  <version>0.3.4</version>
+  <version>0.4.0</version>
   <description>
     Java ROS message and service generators.
   </description>

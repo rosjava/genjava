@@ -2,8 +2,8 @@
 Changelog for package genjava
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2019-04-10)
+------------------
 * Initial Melodic release: updating dependencies to the proper ranges.
 
 0.3.4 (2019-01-23)
